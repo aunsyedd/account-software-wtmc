@@ -2,7 +2,7 @@ import type { SetupProblem } from "@/lib/setup";
 
 /** Full-page instructions shown while the database schema isn't set up yet. */
 export function DatabaseSetupNotice({ problem }: { problem: SetupProblem }) {
-  const sqlFile = problem.schema === "public" ? "supabase/setup_all.sql" : `supabase/setup_${problem.schema}_schema.sql`;
+  const sqlFile = "supabase/setup_wtmc.sql";
   return (
     <div className="state-card">
       <h2>One-time database setup needed</h2>
@@ -14,7 +14,7 @@ export function DatabaseSetupNotice({ problem }: { problem: SetupProblem }) {
         </p>
       ) : (
         <p>
-          The tables for this app don&apos;t exist yet. In the Supabase dashboard open the <strong>SQL Editor</strong>,
+          The WTMC tables (ending in <code>_wtmc</code>) don&apos;t exist yet. In the Supabase dashboard open the <strong>SQL Editor</strong>,
           paste the whole file <code>{sqlFile}</code> and press Run. Then reload this page.
         </p>
       )}

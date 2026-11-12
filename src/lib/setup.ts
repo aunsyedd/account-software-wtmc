@@ -5,13 +5,13 @@ export type SetupProblem = { kind: "schema-not-exposed" | "tables-missing" | "ot
 let ready = false;
 
 /**
- * Checks once that this app's database schema is reachable, so a half-finished
+ * Checks once that this app's _wtmc tables are reachable, so a half-finished
  * setup shows clear instructions instead of "Something went wrong" on every page.
  * After the first success it is never checked again (until the server restarts).
  */
 export async function checkDatabaseSetup(): Promise<SetupProblem | null> {
   if (ready) return null;
-  const schema = process.env.SUPABASE_DB_SCHEMA || "public";
+  const schema = "public";
   const { error } = await getSupabase().from("company_settings").select("id").limit(1);
   if (!error) {
     ready = true;
