@@ -13,8 +13,8 @@ const font = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "WTMC Inventory Software",
-    template: "%s · WTMC",
+    default: "Washika Tabassum Accounts Software",
+    template: "%s · Washika Tabassum Accounts",
   },
   description: "Invoicing, inventory, expense and payroll software for Washika Tabassum Marwah Co. (WTMC)",
   icons: { icon: "/icon.svg", apple: "/logo.jpg" },

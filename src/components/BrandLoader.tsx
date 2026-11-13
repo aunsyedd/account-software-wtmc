@@ -29,8 +29,8 @@ export function BrandLoader({
         </div>
         {variant === "screen" ? (
           <div className="brand-loader-name">
-            WTMC
-            <small>Inventory Software</small>
+            Washika Tabassum
+            <small>Accounts Software</small>
           </div>
         ) : null}
         <div className="brand-loader-bar">

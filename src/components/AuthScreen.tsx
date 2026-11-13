@@ -28,8 +28,8 @@ export function AuthScreen({
             <BrandMark animated />
           </div>
           <h2>
-            WTMC
-            <span>Inventory Software</span>
+            Washika Tabassum
+            <span>Accounts Software</span>
           </h2>
           <p>One place to run sales, stock, purchases and payroll — accurate to the last halala.</p>
           <ul className="auth-features">
@@ -51,8 +51,8 @@ export function AuthScreen({
           <div className="auth-card-logo">
             <BrandMark animated />
             <span>
-              WTMC
-              <small>Inventory Software</small>
+              Washika Tabassum
+              <small>Accounts Software</small>
             </span>
           </div>
           <h1>{title}</h1>

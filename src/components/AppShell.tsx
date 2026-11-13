@@ -97,8 +97,8 @@ export function AppShell({ email, children }: { email: string; children: React.R
               <BrandMark />
             </span>
             <span className="side-brand-text">
-              WTMC
-              <small>Inventory Software</small>
+              Washika Tabassum
+              <small>Accounts Software</small>
             </span>
           </Link>
           <button className="side-close" type="button" aria-label="Close menu" onClick={() => setOpen(false)}>
@@ -143,7 +143,7 @@ export function AppShell({ email, children }: { email: string; children: React.R
             <Icon name="menu" size={20} />
           </button>
           <div className="topbar-title">
-            <span className="crumb">WTMC</span>
+            <span className="crumb">Washika Tabassum</span>
             <span className="crumb-sep">/</span>
             <strong>{section}</strong>
           </div>
