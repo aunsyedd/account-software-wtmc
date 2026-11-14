@@ -21,9 +21,6 @@ export default async function InvoicesPage() {
         <h1>Invoices</h1>
         <div className="no-print" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <PrintButton filename="Invoices" />
-          <Link className="btn btn-green" href="/invoices/new">
-            + Add invoice
-          </Link>
         </div>
       </div>
       <NexoraSyncBar result={sync} back="/invoices" />

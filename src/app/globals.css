@@ -312,6 +312,17 @@ button:disabled { cursor: not-allowed; }
 
 .main { flex: 1; padding: 28px 28px 56px; min-width: 0; width: 100%; max-width: 1440px; }
 
+.app-footer {
+  padding: 14px 28px 18px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+}
+.app-footer a { color: #334155; font-weight: 600; text-decoration: none; }
+.app-footer a:hover { color: #17407a; }
+.auth-footer { border-top: 0; padding: 4px 0 0; margin: 0; }
+
 .page-fade { animation: pageIn 0.5s var(--ease) both; }
 
 /* ------------------------------------------------------------- Page head */

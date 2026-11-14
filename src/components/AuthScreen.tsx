@@ -62,6 +62,12 @@ export function AuthScreen({
         <p className="auth-secure">
           <Icon name="lock" size={14} /> Secured, encrypted session
         </p>
+        <p className="app-footer auth-footer">
+          Developed &amp; Engineered by{" "}
+          <a href="https://nexoratech.info" target="_blank" rel="noopener noreferrer">
+            Nexora Tech
+          </a>
+        </p>
       </section>
     </div>
   );

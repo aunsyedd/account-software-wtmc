@@ -148,9 +148,6 @@ export function AppShell({ email, children }: { email: string; children: React.R
             <strong>{section}</strong>
           </div>
           <div className="top-right">
-            <Link href="/invoices/new" className="btn btn-green btn-sm top-cta">
-              + New invoice
-            </Link>
             <span className="avatar avatar-sm" title={email}>
               {initial}
             </span>
@@ -159,6 +156,12 @@ export function AppShell({ email, children }: { email: string; children: React.R
         <main className="main">
           <PageFade>{children}</PageFade>
         </main>
+        <footer className="app-footer no-print">
+          Developed &amp; Engineered by{" "}
+          <a href="https://nexoratech.info" target="_blank" rel="noopener noreferrer">
+            Nexora Tech
+          </a>
+        </footer>
         <TableLabels />
       </div>
     </div>
