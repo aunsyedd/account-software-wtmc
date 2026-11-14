@@ -1726,3 +1726,82 @@ table.statement tbody tr { animation: none; }
 .invoice-company { display: flex; gap: 14px; align-items: flex-start; }
 .invoice-logo { width: 64px; color: var(--brand); flex-shrink: 0; }
 .invoice-logo .brand-mark { width: 100%; height: auto; }
+
+/* ---------------------------------------------------------------
+   Tax Invoice — same layout as Nexora Invoices' printed invoice
+   --------------------------------------------------------------- */
+.ti-scroll { overflow-x: auto; margin: 0 0 24px; -webkit-overflow-scrolling: touch; }
+.tax-invoice {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 8.5pt;
+  line-height: 1.25;
+  color: #000;
+  background: #fff;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 8mm 10mm 6mm;
+  margin: 0 auto;
+  box-sizing: border-box;
+  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.14);
+  border: 1px solid #e2e5ea;
+  color-scheme: light;
+}
+.tax-invoice * { box-sizing: border-box; }
+.tax-invoice .ar { font-family: "Segoe UI", Tahoma, Arial, sans-serif; direction: rtl; unicode-bidi: embed; }
+.tax-invoice table { border-collapse: collapse; background: #fff; color: #000; }
+.tax-invoice td, .tax-invoice th { border: 1px solid #000; color: #000; }
+
+.tax-invoice .ti-title { text-align: center; font-size: 13pt; font-weight: bold; border: 1px solid #000; padding: 4px 8px; margin: 0 0 6px; }
+
+.tax-invoice .ti-header { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.tax-invoice .ti-logo { flex: 0 0 72px; }
+.tax-invoice .ti-logo img { width: 72px; height: auto; display: block; }
+.tax-invoice .ti-meta { flex: 1 1 auto; }
+.tax-invoice .ti-meta td { padding: 2px 5px; vertical-align: middle; }
+.tax-invoice .ti-meta-label { font-weight: bold; white-space: nowrap; width: 38%; }
+.tax-invoice .ti-qr { flex: 0 0 92px; display: flex; justify-content: flex-end; }
+.tax-invoice .ti-qr-img { width: 88px; height: 88px; }
+.tax-invoice .ti-qr-img svg { width: 100%; height: 100%; display: block; }
+.tax-invoice .ti-qr-error { width: 88px; min-height: 88px; font-size: 7pt; color: #666; border: 1px dashed #bbb; padding: 4px; text-align: center; }
+
+.tax-invoice .ti-parties { display: flex; margin-bottom: 6px; }
+.tax-invoice .ti-party { width: 50%; }
+.tax-invoice .ti-party td { padding: 2px 5px; vertical-align: top; }
+.tax-invoice .ti-party-title { font-weight: bold; background: #d9d9d9 !important; text-align: left; }
+.tax-invoice .ti-field-label { font-weight: bold; width: 34%; white-space: nowrap; }
+.tax-invoice .ti-field-value { width: 66%; }
+
+.tax-invoice .ti-detail { width: 100%; margin-bottom: 6px; }
+.tax-invoice .ti-detail td { padding: 3px 6px; vertical-align: top; }
+.tax-invoice .ti-detail-label { font-weight: bold; white-space: nowrap; width: 12%; }
+
+.tax-invoice .ti-items { width: 100%; margin-bottom: 6px; }
+.tax-invoice .ti-items th, .tax-invoice .ti-items td { padding: 3px 4px; vertical-align: middle; }
+.tax-invoice .ti-items th { background: #d9d9d9 !important; font-weight: bold; text-align: center; font-size: 7.5pt; }
+.tax-invoice .ti-items tr { break-inside: avoid; page-break-inside: avoid; }
+.tax-invoice .ti-items .num { text-align: right; white-space: nowrap; }
+.tax-invoice .ti-items .center { text-align: center; }
+
+.tax-invoice .ti-bottom { display: flex; align-items: stretch; margin-bottom: 8px; break-inside: avoid; }
+.tax-invoice .ti-note { width: 50%; border: 1px solid #000; padding: 4px 6px; min-height: 88px; }
+.tax-invoice .ti-note-label { font-weight: bold; margin-bottom: 4px; }
+.tax-invoice .ti-note-text { white-space: pre-line; overflow-wrap: anywhere; }
+.tax-invoice .ti-summary { width: 50%; }
+.tax-invoice .ti-summary td { padding: 3px 6px; }
+.tax-invoice .ti-sum-label { font-weight: bold; text-align: right; width: 70%; }
+.tax-invoice .ti-sum-value { text-align: right; width: 30%; white-space: nowrap; }
+
+.tax-invoice .ti-bank { break-inside: avoid; }
+.tax-invoice .ti-bank > div { font-weight: bold; margin-bottom: 4px; }
+
+.tax-invoice .ti-signature { display: flex; justify-content: space-between; align-items: flex-end; padding-top: 8px; margin-top: 22px; min-height: 48px; break-inside: avoid; }
+.tax-invoice .ti-sign-left { font-weight: bold; }
+.tax-invoice .ti-sign-right { font-weight: bold; text-align: right; min-width: 120px; border-top: 1px solid #000; padding-top: 4px; }
+
+.tax-invoice .ti-footer { border-top: 1px solid #000; margin-top: 8px; padding-top: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 8pt; }
+
+@media print {
+  .ti-scroll { overflow: visible; margin: 0; }
+  .tax-invoice { box-shadow: none !important; border: 0 !important; margin: 0; background: #fff !important; color: #000 !important; }
+  .tax-invoice td, .tax-invoice th { color: #000 !important; }
+}

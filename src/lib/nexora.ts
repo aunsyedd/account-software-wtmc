@@ -67,7 +67,7 @@ export async function syncFromNexora({ force = false } = {}): Promise<SyncResult
   return last;
 }
 
-function nexoraClient() {
+export function nexoraClient() {
   return createClient(process.env.NEXORA_SUPABASE_URL!, nexoraKey(), {
     auth: { persistSession: false, autoRefreshToken: false },
   });
