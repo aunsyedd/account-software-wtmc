@@ -1,0 +1,36 @@
+{
+  "invoices": [
+    {
+      "id": "5fb935d0-498c-4dc4-81fe-cd28ef7cb8e5",
+      "number": "CI-1-WTMC-26",
+      "status": "cancelled"
+    },
+    {
+      "id": "7d2d737e-2007-4b56-b805-ccaa0c66e08d",
+      "number": "CI-26-WTMC-26",
+      "status": "cancelled"
+    }
+  ],
+  "payments": [
+    {
+      "id": "fd6171c7-0284-4d73-81e0-7b3f5b8dcfc6",
+      "invoice_id": "5fb935d0-498c-4dc4-81fe-cd28ef7cb8e5",
+      "amount": 4600,
+      "payment_date": "2026-06-15",
+      "payment_mode": "Bank",
+      "reference": null,
+      "notes": "Marked fully paid (bulk)",
+      "created_at": "2026-11-12T22:35:52.330497+00:00"
+    },
+    {
+      "id": "fee64c16-6350-45a1-878f-4824db139c3f",
+      "invoice_id": "7d2d737e-2007-4b56-b805-ccaa0c66e08d",
+      "amount": 2760,
+      "payment_date": "2026-06-15",
+      "payment_mode": "Bank",
+      "reference": null,
+      "notes": "Marked fully paid (bulk)",
+      "created_at": "2026-11-12T22:35:52.330497+00:00"
+    }
+  ]
+}

@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { deletePayment, savePayment } from "@/app/actions";
+import { deletePayment, markInvoicePaid, markInvoiceUnpaid, savePayment } from "@/app/actions";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
+import { PaidToggle } from "@/components/PaidToggle";
 import { PrintButton } from "@/components/PrintButton";
 import { SubmitButton } from "@/components/SubmitButton";
 import { TaxInvoice } from "@/components/TaxInvoice";
 import { displayDate, money, todayISO } from "@/lib/format";
 import { getCompany, getInvoice } from "@/lib/queries";
 import { buildTaxInvoice } from "@/lib/taxInvoice";
-import { round2 } from "@/lib/vat";
+import { paymentStatus, round2 } from "@/lib/vat";
 
 export default async function InvoiceViewPage({
   params,
@@ -25,6 +26,11 @@ export default async function InvoiceViewPage({
   const paid = Number(invoice.paid_amount || 0);
   const due = round2(payable - paid);
   const isQuote = invoice.title === "Proforma Invoice";
+  const canToggle = !isQuote && invoice.status !== "cancelled" && invoice.status !== "draft";
+  const total = Number(invoice.grand_total || 0);
+  const payState = paymentStatus(paid, total);
+  const stillOwed = round2(total - paid);
+  const customer = invoice.client_name || "This customer";
   const taxInvoice = await buildTaxInvoice({ invoice, items, client });
 
   return (
@@ -35,11 +41,21 @@ export default async function InvoiceViewPage({
             {invoice.title} {invoice.number}
           </h1>
           <p className="hint">
-            <span className={"badge " + invoice.status}>{invoice.status}</span>
+            <span className={"badge " + (canToggle ? payState : invoice.status)}>{canToggle ? payState : invoice.status}</span>
             {fromNexora ? <span className="badge nexora">Nexora</span> : null}
           </p>
         </div>
         <div className="head-actions">
+          {canToggle ? (
+            <PaidToggle
+              invoiceId={id}
+              status={payState}
+              owedLabel={money(total, s)}
+              paidLabel={money(paid, s)}
+              markPaid={markInvoicePaid}
+              markUnpaid={markInvoiceUnpaid}
+            />
+          ) : null}
           <PrintButton filename={`${invoice.title} ${invoice.number}${invoice.client_name ? " - " + invoice.client_name : ""}`} />
           {fromNexora ? null : (
             <Link className="btn btn-gray" href={`/invoices/${id}/edit`}>
@@ -59,6 +75,14 @@ export default async function InvoiceViewPage({
               Edit or delete it on the Nexora Invoices site; changes show up here automatically. Payments are recorded here.
             </span>
           </span>
+        </div>
+      ) : null}
+
+      {canToggle && stillOwed > 0.004 ? (
+        <div className="notice notice-danger no-print">
+          <strong>Payment reminder:</strong> {customer} still has to give us <strong>{money(stillOwed, s)}</strong> for this
+          invoice{paid > 0 ? ` (${money(paid, s)} of ${money(total, s)} received so far)` : ""}. Click <b>Paid</b> once the money
+          is received.
         </div>
       ) : null}
 

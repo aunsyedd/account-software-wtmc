@@ -1380,6 +1380,44 @@ table.data tbody tr:nth-child(n + 9) { animation-delay: 0.24s; }
 .reminder li { margin: 2px 0; }
 .reminder a { font-weight: 700; color: #7c2d12; }
 
+.paid-toggle {
+  display: inline-flex;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-sm);
+}
+.paid-toggle form { display: contents; }
+.paid-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 78px;
+  justify-content: center;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.paid-toggle-btn:hover:not(:disabled) { background: #f1f4f9; color: var(--ink); }
+.paid-toggle-btn.is-paid.is-active { background: var(--success); color: #fff; }
+.paid-toggle-btn.is-unpaid.is-active { background: var(--danger); color: #fff; }
+.paid-toggle-btn:disabled { cursor: default; }
+.paid-toggle-btn .btn-spinner { width: 12px; height: 12px; }
+.paid-toggle-label { font-size: 12px; color: var(--muted); font-weight: 600; margin-right: 6px; }
+.notice-danger { background: var(--danger-bg); border-color: #f8c9c9; color: #7f1d1d; }
+.reminder.reminder-owed { background: #fff5f5; border-color: #f8c9c9; border-left-color: var(--danger); color: #5f1414; }
+.reminder.reminder-owed > strong, .reminder.reminder-owed a { color: #7f1d1d; }
+.reminder.reminder-owed ul ul { color: #7a2f2f; }
+
 .pay-list { font-size: 13px; line-height: 1.6; }
 .pay-list .link-danger { font-size: 12px; }
 .badge.due { background: var(--brand-50); color: var(--brand-600); }

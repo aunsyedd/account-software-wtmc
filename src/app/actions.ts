@@ -304,6 +304,46 @@ export async function savePayment(formData: FormData) {
   redirect(`/invoices/${invoice_id}`);
 }
 
+/** "Paid" button: record one payment for whatever is still owed on the invoice. */
+export async function markInvoicePaid(formData: FormData) {
+  const supabase = getSupabase();
+  const invoice_id = str(formData, "invoice_id");
+  const inv = await getInvoiceBalance(invoice_id);
+  const owed = round2(Number(inv.grand_total || 0) - Number(inv.paid_amount || 0));
+  if (owed > 0) {
+    const { error } = await supabase.from("payments").insert({
+      invoice_id,
+      amount: owed,
+      payment_date: str(formData, "payment_date") || todayISO(),
+      payment_mode: str(formData, "payment_mode") || "Cash",
+      reference: "Marked as paid",
+      notes: null,
+    });
+    if (error) throw error;
+  }
+  await refreshInvoiceStatus(invoice_id);
+  revalidatePath("/invoices");
+  revalidatePath("/dashboard");
+  revalidatePath("/reports");
+  revalidatePath("/clients");
+  redirect(`/invoices/${invoice_id}`);
+}
+
+/** "Unpaid" button: remove the payments recorded on the invoice so the full amount is owed again. */
+export async function markInvoiceUnpaid(formData: FormData) {
+  const supabase = getSupabase();
+  const invoice_id = str(formData, "id") || str(formData, "invoice_id");
+  if (!invoice_id) redirect("/invoices");
+  const { error } = await supabase.from("payments").delete().eq("invoice_id", invoice_id);
+  if (error) throw error;
+  await refreshInvoiceStatus(invoice_id);
+  revalidatePath("/invoices");
+  revalidatePath("/dashboard");
+  revalidatePath("/reports");
+  revalidatePath("/clients");
+  redirect(`/invoices/${invoice_id}`);
+}
+
 export async function saveExpense(formData: FormData) {
   const supabase = getSupabase();
   const id = str(formData, "id");

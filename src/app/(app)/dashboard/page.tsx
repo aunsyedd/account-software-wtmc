@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PrintButton } from "@/components/PrintButton";
 import { PrintHeader } from "@/components/PrintHeader";
 import { SalaryReminders } from "@/components/SalaryReminders";
+import { CustomerReminders } from "@/components/CustomerReminders";
 import { getCompany } from "@/lib/queries";
 import { displayDate, money, qty, todayISO } from "@/lib/format";
 import { balanceSheet, balancesAt, get, loadBooks, profitAndLoss, vatFor } from "@/lib/accounts";
@@ -46,11 +47,12 @@ export default async function DashboardPage() {
   const low = books.products.filter(
     (p) => p.track_inventory && Number(p.available_units) <= Number(p.reorder_level)
   );
-  const unpaidInvoices = saleInvoices
+  const allUnpaid = saleInvoices
     .map((i) => ({ ...i, due: round2(Number(i.grand_total) - Number(i.paid_amount || 0)) }))
     .filter((i) => i.due > 0.004)
-    .sort((a, b) => String(a.invoice_date).localeCompare(String(b.invoice_date)))
-    .slice(0, 8);
+    .sort((a, b) => String(a.invoice_date).localeCompare(String(b.invoice_date)));
+  const unpaidInvoices = allUnpaid.slice(0, 8);
+  const unpaidTotal = sumMoney(allUnpaid, (i) => i.due);
 
   return (
     <div className="report-sheet">
@@ -87,7 +89,16 @@ export default async function DashboardPage() {
       <div className="stats">
         <div className="stat">
           <div className="k">Customers owe us</div>
-          <div className="v">{money(receivable, s)}</div>
+          <div className={"v" + (receivable > 0.004 ? " text-danger" : "")}>{money(receivable, s)}</div>
+          <div className="hint">
+            {allUnpaid.length === 0 ? (
+              "All invoices are paid"
+            ) : (
+              <Link href="/invoices">
+                {allUnpaid.length} unpaid invoice{allUnpaid.length === 1 ? "" : "s"} · {money(unpaidTotal, s)}
+              </Link>
+            )}
+          </div>
         </div>
         <div className="stat">
           <div className="k">We owe vendors</div>
@@ -103,6 +114,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
+      <CustomerReminders invoices={allUnpaid} symbol={s} limit={4} />
       <SalaryReminders statuses={statuses} symbol={s} limit={4} />
 
       <section className="report-block">
