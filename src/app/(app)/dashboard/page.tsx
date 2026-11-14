@@ -32,7 +32,6 @@ export default async function DashboardPage() {
   const pl = profitAndLoss(books, "", "");
   const accounts = balancesAt(books, "");
   const bs = balanceSheet(accounts);
-  const receivable = get(accounts, "ar");
   const payable = -get(accounts, "ap");
 
   const vatRows = VAT_PERIODS.map((p) => {
@@ -89,7 +88,8 @@ export default async function DashboardPage() {
       <div className="stats">
         <div className="stat">
           <div className="k">Customers owe us</div>
-          <div className={"v" + (receivable > 0.004 ? " text-danger" : "")}>{money(receivable, s)}</div>
+          {/* Only what is still due on live invoices; extra or misplaced payments never make it negative. */}
+          <div className={"v" + (unpaidTotal > 0.004 ? " text-danger" : "")}>{money(unpaidTotal, s)}</div>
           <div className="hint">
             {allUnpaid.length === 0 ? (
               "All invoices are paid"
