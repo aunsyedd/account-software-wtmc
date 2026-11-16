@@ -785,9 +785,6 @@ export default async function ReportsPage({
         </section>
       ) : null}
 
-      <div className="print-only print-footer">
-        {company.name} · {heading} · printed {displayDate(today)}
-      </div>
     </div>
   );
 }

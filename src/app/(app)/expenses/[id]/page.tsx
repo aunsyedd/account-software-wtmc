@@ -28,7 +28,7 @@ export default async function ExpenseViewPage({
   const docTitle = `${expense.type === "purchase_bill" ? "Purchase bill" : "Expense"} ${expense.number}`;
   return (
     <>
-      <PrintHeader company={company} title={docTitle} subtitle={displayDate(expense.expense_date)} />
+      <PrintHeader company={company} title={docTitle} subtitle={`${displayDate(expense.expense_date)} · ${String(expense.status).replace(/^./, (c: string) => c.toUpperCase())}`} />
       <div className="page-head">
         <div>
           <h1>{docTitle}</h1>

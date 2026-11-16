@@ -1,17 +1,24 @@
 import Link from "next/link";
 import { deleteVendor } from "@/app/actions";
-import { getVendors } from "@/lib/queries";
+import { getCompany, getVendors } from "@/lib/queries";
+import { PrintButton } from "@/components/PrintButton";
+import { PrintHeader } from "@/components/PrintHeader";
+import { displayDate, todayISO } from "@/lib/format";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
 
 export default async function VendorsPage() {
-  const vendors = await getVendors();
+  const [vendors, company] = await Promise.all([getVendors(), getCompany()]);
   return (
     <>
+      <PrintHeader company={company} title="Vendor list" subtitle={`${vendors.length} vendors · ${displayDate(todayISO())}`} />
       <div className="page-head">
         <h1>Vendors</h1>
-        <Link className="btn btn-green" href="/vendors/new">
-          + Add vendor
-        </Link>
+        <div className="head-actions no-print">
+          <PrintButton filename="Vendor list" />
+          <Link className="btn btn-green" href="/vendors/new">
+            + Add vendor
+          </Link>
+        </div>
       </div>
       <div className="table-wrap">
       <table className="data">
@@ -22,7 +29,7 @@ export default async function VendorsPage() {
             <th>Phone</th>
             <th>Tax number</th>
             <th>City</th>
-            <th>Actions</th>
+            <th className="no-print">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -50,7 +57,7 @@ export default async function VendorsPage() {
                   <td>{v.phone}</td>
                   <td>{v.tax_number}</td>
                   <td>{v.city}</td>
-                  <td className="actions">
+                  <td className="actions no-print">
                     <Link href={`/vendors/${v.id}`}>Edit</Link>
                     <ConfirmDelete action={deleteVendor} id={v.id} what={`vendor ${v.name}`} />
                   </td>

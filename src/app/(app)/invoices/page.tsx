@@ -2,7 +2,8 @@ import Link from "next/link";
 import { deleteInvoice } from "@/app/actions";
 import { PrintButton } from "@/components/PrintButton";
 import { PrintHeader } from "@/components/PrintHeader";
-import { displayDate, money } from "@/lib/format";
+import { displayDate, money, todayISO } from "@/lib/format";
+import { round2, sumMoney } from "@/lib/vat";
 import { getCompany, getInvoices } from "@/lib/queries";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { NexoraSyncBar } from "@/components/NexoraSyncBar";
@@ -14,9 +15,14 @@ export default async function InvoicesPage() {
   // Invoices deleted on Nexora are kept as "cancelled"; don't list them.
   const invoices = all.filter((i: { status: string }) => i.status !== "cancelled");
   const s = company.currency_symbol;
+  // Quotes (proforma) are not sales, so they are left out of the totals row.
+  const sales = invoices.filter((i: { title: string }) => i.title !== "Proforma Invoice");
+  const vatSum = sumMoney(sales, (i) => i.tax_total);
+  const totalSum = sumMoney(sales, (i) => i.grand_total);
+  const dueSum = sumMoney(sales, (i) => Math.max(0, round2(Number(i.grand_total) - Number(i.paid_amount || 0))));
   return (
     <>
-      <PrintHeader company={company} title="Invoices" />
+      <PrintHeader company={company} title="Invoices" subtitle={`${invoices.length} invoices · ${displayDate(todayISO())}`} />
       <div className="page-head">
         <h1>Invoices</h1>
         <div className="no-print" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -64,7 +70,7 @@ export default async function InvoicesPage() {
                     <Link href={`/invoices/${inv.id}`}>{inv.number}</Link>
                     {inv.source === "nexora" ? <span className="badge nexora">Nexora</span> : null}
                   </td>
-                  <td>{displayDate(inv.invoice_date)}</td>
+                  <td className="date">{displayDate(inv.invoice_date)}</td>
                   <td>{inv.client_name}</td>
                   <td>
                     <span className={"badge " + (inv.title === "Proforma Invoice" ? "draft" : inv.status)}>
@@ -92,6 +98,25 @@ export default async function InvoicesPage() {
             )
           )}
         </tbody>
+        {sales.length ? (
+          <tfoot>
+            <tr>
+              <td colSpan={4}>
+                <strong>Total{sales.length < invoices.length ? " (excl. quotes)" : ""}</strong>
+              </td>
+              <td className="num">
+                <strong>{money(vatSum, s)}</strong>
+              </td>
+              <td className="num">
+                <strong>{money(totalSum, s)}</strong>
+              </td>
+              <td className="num">
+                <strong>{money(dueSum, s)}</strong>
+              </td>
+              <td className="no-print"></td>
+            </tr>
+          </tfoot>
+        ) : null}
       </table>
       </div>
     </>

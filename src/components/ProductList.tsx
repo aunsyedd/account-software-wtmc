@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { deleteProduct } from "@/app/actions";
 import { PrintButton } from "@/components/PrintButton";
+import { PrintHeader } from "@/components/PrintHeader";
 import { displayDate, money, qty } from "@/lib/format";
 import { sumMoney } from "@/lib/vat";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
@@ -45,10 +46,12 @@ export function ProductList({
   products,
   sales,
   symbol,
+  company,
 }: {
   products: Product[];
   sales: Sale[];
   symbol: string;
+  company: Parameters<typeof PrintHeader>[0]["company"];
 }) {
   const [view, setView] = useState<"products" | "inventory" | "summary" | "details">(
     "products"
@@ -75,19 +78,32 @@ export function ProductList({
     );
   }, [sales, q]);
 
+  const viewTitle = {
+    products: "Product list",
+    inventory: "Inventory",
+    summary: "Sales summary by product",
+    details: "Sales details",
+  }[view];
+  const searchNote = q.trim() ? `Filtered by "${q.trim()}"` : "";
+
   return (
     <>
+      <PrintHeader
+        company={company}
+        title={viewTitle}
+        subtitle={[searchNote, displayDate(new Date().toISOString().slice(0, 10))].filter(Boolean).join(" · ")}
+      />
       <div className="page-head">
         <h1>Products</h1>
         <div className="no-print" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <PrintButton />
+          <PrintButton filename={viewTitle} />
           <Link className="btn btn-green" href="/products/new">
             + Add product
           </Link>
         </div>
       </div>
 
-      <div className="toolbar">
+      <div className="toolbar no-print">
         <label>
           View{" "}
           <select value={view} onChange={(e) => setView(e.target.value as typeof view)}>
@@ -115,7 +131,7 @@ export function ProductList({
               <th>Unique code / barcode</th>
               <th>HSN / SAC</th>
               <th className="num">Unit selling price</th>
-              <th>Actions</th>
+              <th className="no-print">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -135,7 +151,7 @@ export function ProductList({
                   <td>{p.unique_code || p.barcode}</td>
                   <td>{p.hsn_code}</td>
                   <td className="num">{money(p.unit_selling_price, symbol)}</td>
-                  <td className="actions">
+                  <td className="actions no-print">
                     <Link href={`/products/${p.id}`}>Edit</Link>
                     <Link href={`/expenses/new?type=purchase_bill&product=${p.id}`}>
                       Purchases

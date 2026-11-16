@@ -1673,7 +1673,7 @@ table.statement tbody tr { animation: none; }
 
 /* ================================================================= Print */
 
-@page { size: A4; margin: 12mm 12mm 14mm; }
+@page { size: A4; margin: 12mm 12mm 16mm; }
 
 @media print {
   :root { color-scheme: light; }
@@ -1686,9 +1686,15 @@ table.statement tbody tr { animation: none; }
     backdrop-filter: none !important;
   }
   .topbar, .sidebar, .backdrop, .menu-btn, .no-print, .brand-loader, .top-progress, .modal-backdrop,
-  .report-controls, .head-actions, .sync-bar, .alert, .notice {
+  .report-controls, .head-actions, .sync-bar, .alert, .notice, .toolbar, .btn, .icon-btn,
+  table.data td.actions, .route-loader {
     display: none !important;
   }
+  /* the letterhead already names the document, so the on-screen page title is not repeated */
+  .print-letterhead ~ .page-head h1 { display: none; }
+  .print-letterhead ~ .page-head:not(:has(.hint:not(.no-print))) { display: none; }
+  p, li, dd { orphans: 3; widows: 3; }
+  h1, h2, h3, .report-title { break-after: avoid; page-break-after: avoid; }
   .print-only { display: block !important; }
   .shell, .workspace { display: block; }
   .main { display: block; padding: 0; max-width: none; }
@@ -1736,19 +1742,25 @@ table.statement tbody tr { animation: none; }
 
   .table-wrap { overflow: visible !important; border: 0 !important; border-radius: 0; max-width: none !important; }
   .table-wrap > table.data, .invoice-lines > table.data { min-width: 0 !important; }
-  table.data { border: 1px solid #bbb !important; border-radius: 0; font-size: 9pt; overflow: visible; }
+  table.data { width: 100%; border: 1px solid #bbb !important; border-radius: 0; font-size: 9pt; overflow: visible; border-collapse: collapse; }
+  table.data .num, table.data .date { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  table.data td.wrap { min-width: 0; }
   table.data thead { display: table-header-group; }
   table.data tfoot { display: table-row-group; }
   table.data tr { break-inside: avoid; page-break-inside: avoid; }
   table.data th { background: #eef1f7 !important; color: #222 !important; padding: 5px 7px; font-size: 7.5pt; border-color: #bbb !important; white-space: normal; }
   table.data td.muted { padding: 10px 7px; }
   table.data td { white-space: normal; padding: 4px 7px; color: #111 !important; border-color: #ddd !important; background: #fff !important; }
+  /* light zebra striping keeps long rows easy to follow on paper */
+  table.data:not(.statement) tbody tr:nth-child(even) td { background: #f7f8fb !important; }
+  table.data tfoot td { font-weight: 700; }
   table.data tfoot td { background: #f3f5fa !important; border-top: 1.5px solid #888 !important; padding: 5px 7px; }
   table.statement tr.group td { background: #f6f7fb !important; padding: 4px 7px; }
   .low td { background: #fff !important; }
   .low td:first-child { box-shadow: none; }
   .badge { padding: 0; background: none !important; font-size: 8.5pt; color: #333 !important; }
   .badge::before { display: none; }
+  .badge.nexora { display: none; }
   .text-danger { color: #b91c1c !important; }
 
   /* invoice */
@@ -1761,7 +1773,7 @@ table.statement tbody tr { animation: none; }
   .invoice-meta dl { justify-content: end; font-size: 9.5pt; }
   .bill-to { background: #f6f7fb !important; border: 1px solid #ccc; padding: 8px 10px; margin: 10px 0; break-inside: avoid; }
   .invoice-foot { flex-wrap: nowrap; break-inside: avoid; }
-  .totals-box { border: 1px solid #bbb; background: #fff !important; padding: 6px 10px; border-radius: 4px; min-width: 240px; }
+  .totals-box { border: 1px solid #bbb; background: #fff !important; padding: 6px 10px; border-radius: 4px; min-width: 240px; width: 280px; max-width: 50%; margin-left: auto; break-inside: avoid; }
   .totals-box div { padding: 3px 0; color: #333; }
   .totals-box .grand { border-top: 1.5px solid #17407a; }
   .totals-box .grand strong { color: #17407a !important; font-size: 12pt; }

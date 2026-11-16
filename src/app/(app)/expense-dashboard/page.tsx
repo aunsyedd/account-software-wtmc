@@ -1,5 +1,7 @@
 import { getCompany, getExpenses } from "@/lib/queries";
-import { money } from "@/lib/format";
+import { displayDate, money, todayISO } from "@/lib/format";
+import { PrintButton } from "@/components/PrintButton";
+import { PrintHeader } from "@/components/PrintHeader";
 import { round2, sumMoney } from "@/lib/vat";
 
 export default async function ExpenseDashboardPage() {
@@ -13,9 +15,13 @@ export default async function ExpenseDashboardPage() {
     byCat[name] = round2((byCat[name] || 0) + Number(e.grand_total || 0));
   }
   return (
-    <>
+    <div className="report-sheet">
+      <PrintHeader company={company} title="Expenses by category" subtitle={`All expenses as of ${displayDate(todayISO())}`} />
       <div className="page-head">
         <h1>Expenses dashboard</h1>
+        <div className="head-actions no-print">
+          <PrintButton filename="Expenses by category" />
+        </div>
       </div>
       <div className="stats">
         <div className="stat">
@@ -35,7 +41,8 @@ export default async function ExpenseDashboardPage() {
           <div className="v">{Object.keys(byCat).length}</div>
         </div>
       </div>
-      <h2 style={{ fontSize: 16 }}>Expense distribution by category</h2>
+      <h2 className="report-title">Expense distribution by category</h2>
+      <div className="table-wrap">
       <table className="data">
         <thead>
           <tr>
@@ -55,7 +62,23 @@ export default async function ExpenseDashboardPage() {
               </tr>
             ))}
         </tbody>
+        {total ? (
+          <tfoot>
+            <tr>
+              <td>
+                <strong>Total</strong>
+              </td>
+              <td className="num">
+                <strong>{money(total, s)}</strong>
+              </td>
+              <td className="num">
+                <strong>100%</strong>
+              </td>
+            </tr>
+          </tfoot>
+        ) : null}
       </table>
-    </>
+      </div>
+    </div>
   );
 }

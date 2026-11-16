@@ -12,6 +12,7 @@ export default async function ProductsPage() {
       products={products}
       sales={sales}
       symbol={company.currency_symbol}
+      company={company}
     />
   );
 }
