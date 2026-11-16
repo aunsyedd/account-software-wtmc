@@ -534,6 +534,7 @@ input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--brand-50
 }
 .hint { color: var(--muted); font-size: 13px; }
 .text-danger { color: var(--danger) !important; }
+.text-success { color: var(--success) !important; }
 .w-full { width: 100%; max-width: 100%; }
 
 /* -------------------------------------------------------------- Surfaces */
@@ -1762,6 +1763,7 @@ table.statement tbody tr { animation: none; }
   .badge::before { display: none; }
   .badge.nexora { display: none; }
   .text-danger { color: #b91c1c !important; }
+  .text-success { color: #15803d !important; }
 
   /* invoice */
   .print-invoice { border: 0 !important; padding: 0 !important; max-width: none; border-radius: 0; }

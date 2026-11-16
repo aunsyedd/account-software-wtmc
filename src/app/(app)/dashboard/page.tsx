@@ -80,8 +80,24 @@ export default async function DashboardPage() {
           <div className={"v" + (pl.netProfit < 0 ? " text-danger" : "")}>{money(pl.netProfit, s)}</div>
         </div>
         <div className="stat">
-          <div className="k">VAT payable · this quarter</div>
-          <div className="v">{money(quarter.net, s)}</div>
+          <div className="k">
+            {quarter.net < -0.004 ? "VAT we get back" : "VAT we have to pay"} · this quarter
+          </div>
+          {/* Red = we owe the tax office, green = the tax office owes us. */}
+          <div
+            className={
+              "v" + (quarter.net > 0.004 ? " text-danger" : quarter.net < -0.004 ? " text-success" : "")
+            }
+          >
+            {money(Math.abs(quarter.net), s)}
+          </div>
+          <div className="hint">
+            {quarter.net > 0.004
+              ? "We owe the tax office"
+              : quarter.net < -0.004
+                ? "Tax office owes us"
+                : "Nothing to pay or get back"}
+          </div>
         </div>
       </div>
 
@@ -148,7 +164,11 @@ export default async function DashboardPage() {
                   <td className="num">{money(r.output, s)}</td>
                   <td className="num">{money(r.purchasesNet, s)}</td>
                   <td className="num">{money(r.input, s)}</td>
-                  <td className="num">
+                  <td
+                    className={
+                      "num" + (r.net > 0.004 ? " text-danger" : r.net < -0.004 ? " text-success" : "")
+                    }
+                  >
                     <strong>
                       {money(Math.abs(r.net), s)} {r.net < 0 ? "refund" : r.net > 0 ? "payable" : ""}
                     </strong>
