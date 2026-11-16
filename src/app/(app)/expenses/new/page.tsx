@@ -4,6 +4,7 @@ import { LineItems } from "@/components/LineItems";
 import { todayISO } from "@/lib/format";
 import { getCategories, getCompany, getProducts, getVendors } from "@/lib/queries";
 import { SubmitButton } from "@/components/SubmitButton";
+import { NO_VAT_CATEGORIES } from "@/lib/vat";
 
 export default async function NewExpensePage({
   searchParams,
@@ -18,6 +19,9 @@ export default async function NewExpensePage({
     getProducts(),
     getCompany(),
   ]);
+  const noVatCategoryIds = categories
+    .filter((c: { name: string }) => NO_VAT_CATEGORIES.includes(c.name))
+    .map((c: { id: string }) => c.id);
   const picked = products.find((p: { id: string }) => p.id === product);
   const initial = picked
     ? [
@@ -81,8 +85,17 @@ export default async function NewExpensePage({
           </div>
         </div>
         <h3>Line items</h3>
-        <p className="hint">VAT 15% is added automatically. A &#x20C1;&nbsp;10.00 purchase becomes &#x20C1;&nbsp;11.50. VAT is rounded to the nearest halala per line.</p>
-        <LineItems products={products} mode="expense" initial={initial} symbol={company.currency_symbol} />
+        <p className="hint">
+          With VAT on, 15% is added to each line: a &#x20C1;&nbsp;10.00 purchase becomes &#x20C1;&nbsp;11.50 (rounded to the nearest halala per line).
+          Untick the box for costs with no VAT. Professional Fees start with VAT off.
+        </p>
+        <LineItems
+          products={products}
+          mode="expense"
+          initial={initial}
+          symbol={company.currency_symbol}
+          noVatCategoryIds={noVatCategoryIds}
+        />
         <div className="btn-row">
           <SubmitButton className="btn btn-green" name="intent" value="exit" pendingLabel="Saving…">
             Save &amp; Exit

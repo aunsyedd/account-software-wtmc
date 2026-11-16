@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { deleteExpensePayment, saveExpensePayment } from "@/app/actions";
+import { deleteExpensePayment, saveExpensePayment, setExpenseVat } from "@/app/actions";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { PrintButton } from "@/components/PrintButton";
 import { PrintHeader } from "@/components/PrintHeader";
 import { displayDate, money, qty, todayISO } from "@/lib/format";
 import { getCompany, getExpense } from "@/lib/queries";
-import { VAT_RATE, lineNet, round2 } from "@/lib/vat";
+import { NO_VAT_NAME, VAT_RATE, lineNet, round2 } from "@/lib/vat";
 import { SubmitButton } from "@/components/SubmitButton";
 
 export default async function ExpenseViewPage({
@@ -24,6 +24,7 @@ export default async function ExpenseViewPage({
   const s = company.currency_symbol;
   const due = round2(Number(expense.grand_total || 0) - Number(expense.paid_amount || 0));
 
+  const vatOn = !items.length || items.some((it: { tax_name: string | null }) => it.tax_name !== NO_VAT_NAME);
   const docTitle = `${expense.type === "purchase_bill" ? "Purchase bill" : "Expense"} ${expense.number}`;
   return (
     <>
@@ -56,6 +57,21 @@ export default async function ExpenseViewPage({
             <dt>Date</dt>
             <dd>{displayDate(expense.expense_date)}</dd>
           </div>
+          <div>
+            <dt>VAT</dt>
+            <dd>
+              {vatOn ? `On (${VAT_RATE}%)` : "Off (no VAT)"}
+              {items.length ? (
+                <form action={setExpenseVat} className="no-print" style={{ display: "inline", marginLeft: 10 }}>
+                  <input type="hidden" name="id" value={id} />
+                  <input type="hidden" name="vat" value={vatOn ? "off" : "on"} />
+                  <SubmitButton className="btn btn-gray btn-sm" pendingLabel="Saving…">
+                    {vatOn ? "Turn VAT off" : "Turn VAT on"}
+                  </SubmitButton>
+                </form>
+              ) : null}
+            </dd>
+          </div>
           {expense.bill_number ? (
             <div>
               <dt>Vendor bill no.</dt>
@@ -70,7 +86,7 @@ export default async function ExpenseViewPage({
               <th>Description</th>
               <th className="num">Qty</th>
               <th className="num">Price</th>
-              <th className="num">VAT {VAT_RATE}%</th>
+              <th className="num">{vatOn ? `VAT ${VAT_RATE}%` : "VAT"}</th>
               <th className="num">Amount</th>
             </tr>
           </thead>
@@ -103,11 +119,11 @@ export default async function ExpenseViewPage({
             <strong>{money(expense.subtotal, s)}</strong>
           </div>
           <div>
-            <span>VAT {VAT_RATE}%</span>
+            <span>{vatOn ? `VAT ${VAT_RATE}%` : "VAT (off)"}</span>
             <strong>{money(expense.tax_total || 0, s)}</strong>
           </div>
           <div className="grand">
-            <span>Total incl. VAT</span>
+            <span>{vatOn ? "Total incl. VAT" : "Total"}</span>
             <strong>{money(expense.grand_total, s)}</strong>
           </div>
           <div>

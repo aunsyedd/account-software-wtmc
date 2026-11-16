@@ -6,7 +6,7 @@ import { getSupabase } from "@/lib/supabase";
 import { getExpenseBalance, getInvoiceBalance } from "@/lib/queries";
 import { signIn, signOut, signUp } from "@/lib/auth";
 import { syncFromNexora } from "@/lib/nexora";
-import { lineNet, paymentStatus, round2, VAT_NAME, VAT_RATE, vatAmount } from "@/lib/vat";
+import { lineNet, NO_VAT_NAME, paymentStatus, round2, VAT_NAME, VAT_RATE, vatAmount } from "@/lib/vat";
 import { todayISO } from "@/lib/format";
 
 async function nextNumber(kind: "invoice" | "expense") {
@@ -386,7 +386,9 @@ export async function saveExpense(formData: FormData) {
     .map((description, i) => {
       const qty = nonNeg(qtys[i]);
       const unit_price = round2(nonNeg(prices[i]));
-      const tax_rate = Number(taxRates[i] || VAT_RATE) || VAT_RATE;
+      // VAT can be switched off per expense, so a 0% rate must stay 0 (not fall back to 15%).
+      const parsedRate = Number(taxRates[i]);
+      const tax_rate = taxRates[i] != null && taxRates[i] !== "" && Number.isFinite(parsedRate) ? parsedRate : VAT_RATE;
       const net = lineNet(qty, unit_price);
       return {
         expense_id: expenseId,
@@ -394,7 +396,7 @@ export async function saveExpense(formData: FormData) {
         description,
         qty,
         unit_price,
-        tax_name: taxNames[i] || VAT_NAME,
+        tax_name: tax_rate ? taxNames[i] || VAT_NAME : NO_VAT_NAME,
         tax_rate,
         tax_amount: vatAmount(net, tax_rate),
         sort_order: i,
@@ -423,6 +425,34 @@ export async function saveExpense(formData: FormData) {
   if (intent === "pay") redirect(`/expenses/${expenseId}?pay=1`);
   if (intent === "new") redirect(`/expenses/new?type=${type}`);
   redirect("/expenses");
+}
+
+/** Switch VAT on or off for every line of a saved expense; prices stay the same, the total changes. */
+export async function setExpenseVat(formData: FormData) {
+  const supabase = getSupabase();
+  const expense_id = str(formData, "id");
+  if (!expense_id) redirect("/expenses");
+  const on = str(formData, "vat") === "on";
+  const { data: items, error } = await supabase
+    .from("expense_items")
+    .select("id, qty, unit_price")
+    .eq("expense_id", expense_id);
+  if (error) throw error;
+  for (const it of items ?? []) {
+    const tax_amount = on ? vatAmount(lineNet(Number(it.qty), Number(it.unit_price)), VAT_RATE) : 0;
+    const res = await supabase
+      .from("expense_items")
+      .update({ tax_name: on ? VAT_NAME : NO_VAT_NAME, tax_amount })
+      .eq("id", it.id);
+    if (res.error) throw res.error;
+  }
+  await supabase.from("expenses").update({ updated_at: new Date().toISOString() }).eq("id", expense_id);
+  await refreshExpenseStatus(expense_id);
+  revalidatePath("/expenses");
+  revalidatePath(`/expenses/${expense_id}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/reports");
+  redirect(`/expenses/${expense_id}`);
 }
 
 export async function deleteExpense(formData: FormData) {

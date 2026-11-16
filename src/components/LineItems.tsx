@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { money } from "@/lib/format";
-import { documentTotals, lineGross, lineNet, round2, VAT_NAME, VAT_RATE, vatAmount } from "@/lib/vat";
+import { documentTotals, lineGross, lineNet, NO_VAT_NAME, round2, VAT_NAME, VAT_RATE, vatAmount } from "@/lib/vat";
 
 type Product = {
   id: string;
@@ -40,24 +40,44 @@ export function LineItems({
   initial,
   initialDiscount = 0,
   symbol = "SAR",
+  initialVatOn = true,
+  noVatCategoryIds = [],
 }: {
   products: Product[];
   mode: "invoice" | "expense";
   initial?: Item[];
   initialDiscount?: number;
   symbol?: string;
+  /** Expenses only: whether VAT starts switched on. */
+  initialVatOn?: boolean;
+  /** Expenses only: picking one of these categories switches VAT off (until the user changes it). */
+  noVatCategoryIds?: string[];
 }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [vatOn, setVatOn] = useState(mode === "invoice" ? true : initialVatOn);
+  const vatTouched = useRef(false);
+  const rate = vatOn ? VAT_RATE : 0;
+  const taxName = vatOn ? VAT_NAME : NO_VAT_NAME;
+  const noVatKey = noVatCategoryIds.join(",");
+
+  // Follow the expense category select in the same form: e.g. Professional Fees has no VAT.
+  useEffect(() => {
+    if (mode !== "expense") return;
+    const select = wrapRef.current?.closest("form")?.querySelector<HTMLSelectElement>('select[name="category_id"]');
+    if (!select) return;
+    const ids = noVatKey ? noVatKey.split(",") : [];
+    const onChange = () => {
+      if (!vatTouched.current) setVatOn(!ids.includes(select.value));
+    };
+    select.addEventListener("change", onChange);
+    return () => select.removeEventListener("change", onChange);
+  }, [mode, noVatKey]);
   const [discount, setDiscount] = useState<string>(
     Number(initialDiscount || 0) ? String(round2(initialDiscount)) : "0"
   );
   const [rows, setRows] = useState<Item[]>(
     initial && initial.length
-      ? initial.map((row) => ({
-          ...row,
-          tax_name: VAT_NAME,
-          tax_rate: VAT_RATE,
-          tax_amount: vatAmount(lineNet(Number(row.qty || 0), Number(row.unit_price || 0))),
-        }))
+      ? initial.map((row) => ({ ...row }))
       : [emptyRow()]
   );
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -66,9 +86,7 @@ export function LineItems({
     setRows((prev) =>
       prev.map((row, idx) => {
         if (idx !== i) return row;
-        const next = { ...row, ...patch, tax_name: VAT_NAME, tax_rate: VAT_RATE };
-        next.tax_amount = vatAmount(lineNet(Number(next.qty || 0), Number(next.unit_price || 0)));
-        return next;
+        return { ...row, ...patch };
       })
     );
   }
@@ -98,15 +116,30 @@ export function LineItems({
   const totals = useMemo(
     () =>
       documentTotals(
-        rows.map((r) => ({ qty: r.qty, unit_price: r.unit_price, tax_rate: VAT_RATE })),
+        rows.map((r) => ({ qty: r.qty, unit_price: r.unit_price, tax_rate: rate })),
         mode === "invoice" ? Number(discount || 0) : 0
       ),
-    [rows, discount, mode]
+    [rows, discount, mode, rate]
   );
   const discountTooBig = mode === "invoice" && round2(Number(discount || 0)) > totals.subtotal;
 
   return (
-    <div>
+    <div ref={wrapRef}>
+      {mode === "expense" ? (
+        <label className="vat-toggle no-print">
+          <input
+            type="checkbox"
+            checked={vatOn}
+            onChange={(e) => {
+              vatTouched.current = true;
+              setVatOn(e.target.checked);
+            }}
+          />
+          <span>
+            Charge VAT {VAT_RATE}% on this expense {vatOn ? "" : "(off: no VAT)"}
+          </span>
+        </label>
+      ) : null}
       <div className="table-wrap">
       <table className="data">
         <thead>
@@ -114,7 +147,7 @@ export function LineItems({
             <th>Description</th>
             <th className="num">Qty</th>
             <th className="num">Unit price</th>
-            <th className="num">VAT {VAT_RATE}%</th>
+            <th className="num">{vatOn ? `VAT ${VAT_RATE}%` : "VAT"}</th>
             <th className="num">Line total</th>
             <th className="no-print"></th>
           </tr>
@@ -122,14 +155,14 @@ export function LineItems({
         <tbody>
           {rows.map((row, i) => {
             const net = lineNet(Number(row.qty || 0), Number(row.unit_price || 0));
-            const vat = vatAmount(net);
+            const vat = vatAmount(net, rate);
             return (
               <tr key={i}>
                 <td>
                   <div className="suggest">
                     <input type="hidden" name="item_product_id" value={row.product_id || ""} />
-                    <input type="hidden" name="item_tax_name" value={VAT_NAME} />
-                    <input type="hidden" name="item_tax_rate" value={String(VAT_RATE)} />
+                    <input type="hidden" name="item_tax_name" value={taxName} />
+                    <input type="hidden" name="item_tax_rate" value={String(rate)} />
                     <input type="hidden" name="item_tax_amount" value={String(vat.toFixed(2))} />
                     <input
                       name="item_description"
@@ -199,7 +232,7 @@ export function LineItems({
                 </td>
                 <td className="num">{money(vat, symbol)}</td>
                 <td className="num">
-                  {money(lineGross(Number(row.qty || 0), Number(row.unit_price || 0)), symbol)}
+                  {money(lineGross(Number(row.qty || 0), Number(row.unit_price || 0), rate), symbol)}
                 </td>
                 <td className="no-print">
                   <button
@@ -259,11 +292,11 @@ export function LineItems({
             </>
           ) : null}
           <div>
-            <span>VAT {VAT_RATE}%</span>
+            <span>{vatOn ? `VAT ${VAT_RATE}%` : "VAT (off)"}</span>
             <strong>{money(totals.vat, symbol)}</strong>
           </div>
           <div className="grand">
-            <span>Total incl. VAT</span>
+            <span>{vatOn ? "Total incl. VAT" : "Total"}</span>
             <strong>{money(totals.total, symbol)}</strong>
           </div>
         </div>

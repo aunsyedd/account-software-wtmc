@@ -1,5 +1,9 @@
 export const VAT_RATE = 15;
 export const VAT_NAME = "VAT";
+export const NO_VAT_NAME = "No VAT";
+
+/** Expense categories that carry no VAT by default (VAT can still be switched on per expense). */
+export const NO_VAT_CATEGORIES = ["Professional Fees"];
 
 /** Titles that are quotes, not real sales: they don't move stock or count as sales/VAT. */
 export const NON_SALE_TITLES = ["Proforma Invoice"];

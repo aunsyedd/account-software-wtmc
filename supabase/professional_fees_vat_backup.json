@@ -1,0 +1,163 @@
+{
+  "taken": "2026-11-16T20:05:13.521Z",
+  "expenses": [
+    {
+      "id": "d2f32666-cb6d-4728-9c92-e295489ad373",
+      "number": "EXP-0021"
+    },
+    {
+      "id": "ff08d33a-77d2-4808-96f3-4410f5495cdf",
+      "number": "EXP-0004"
+    },
+    {
+      "id": "14a3106a-64e6-41a6-9f09-0286d63e0c1c",
+      "number": "EXP-0008"
+    },
+    {
+      "id": "89dd2641-f733-4a7d-a0c3-ad9ea9ed601b",
+      "number": "EXP-0012"
+    },
+    {
+      "id": "57e8de30-5c37-4b4a-b670-52beeabf9b52",
+      "number": "EXP-0017"
+    },
+    {
+      "id": "112a8450-5036-4c40-bf40-018f5c710bdc",
+      "number": "EXP-0020"
+    },
+    {
+      "id": "c348a237-bda3-4225-b91b-e98fcd17570e",
+      "number": "EXP-0035"
+    },
+    {
+      "id": "cfa7a6cb-2650-48b7-8020-f733a7f7a4b0",
+      "number": "EXP-0036"
+    },
+    {
+      "id": "472964ae-047f-4adc-908b-d3faf5889dac",
+      "number": "EXP-0052"
+    }
+  ],
+  "items": [
+    {
+      "id": "10b20d6a-e09e-48fb-898b-f9afd4656dc2",
+      "expense_id": "ff08d33a-77d2-4808-96f3-4410f5495cdf",
+      "product_id": null,
+      "description": "Iqama Transfer fee of Mr. Zakaria ",
+      "qty": 1,
+      "unit_price": 1739.2,
+      "tax_name": "VAT",
+      "tax_amount": 260.88,
+      "sort_order": 0,
+      "tax_rate": 15
+    },
+    {
+      "id": "e7c783d8-9c21-4695-9b13-835fdcf4233e",
+      "expense_id": "ff08d33a-77d2-4808-96f3-4410f5495cdf",
+      "product_id": null,
+      "description": "Jawazat Fees ",
+      "qty": 1,
+      "unit_price": 565.3,
+      "tax_name": "VAT",
+      "tax_amount": 84.8,
+      "sort_order": 1,
+      "tax_rate": 15
+    },
+    {
+      "id": "320a5b53-a78b-4631-907a-d93f3ecd9700",
+      "expense_id": "14a3106a-64e6-41a6-9f09-0286d63e0c1c",
+      "product_id": null,
+      "description": "Exit Re-entry of Mr. Shoumon ",
+      "qty": 1,
+      "unit_price": 174,
+      "tax_name": "VAT",
+      "tax_amount": 26.1,
+      "sort_order": 0,
+      "tax_rate": 15
+    },
+    {
+      "id": "daeeedf6-e456-4d32-90de-9ff9d2fce5e6",
+      "expense_id": "89dd2641-f733-4a7d-a0c3-ad9ea9ed601b",
+      "product_id": null,
+      "description": "Muqeem Fees - Saddad Payment ",
+      "qty": 1,
+      "unit_price": 150,
+      "tax_name": "VAT",
+      "tax_amount": 22.5,
+      "sort_order": 0,
+      "tax_rate": 15
+    },
+    {
+      "id": "aa3efde3-e27a-4c4a-916e-7cd87443e811",
+      "expense_id": "57e8de30-5c37-4b4a-b670-52beeabf9b52",
+      "product_id": null,
+      "description": "Tameen Policy of Staff",
+      "qty": 1,
+      "unit_price": 218.7,
+      "tax_name": "VAT",
+      "tax_amount": 32.81,
+      "sort_order": 0,
+      "tax_rate": 15
+    },
+    {
+      "id": "cd96624b-aa64-4b92-acd1-864e70ac21b9",
+      "expense_id": "112a8450-5036-4c40-bf40-018f5c710bdc",
+      "product_id": null,
+      "description": "For Mr. Elyas - Transfer Sponsorship",
+      "qty": 1,
+      "unit_price": 3479,
+      "tax_name": "VAT",
+      "tax_amount": 521.85,
+      "sort_order": 0,
+      "tax_rate": 15
+    },
+    {
+      "id": "8423409e-3eec-409a-9635-8361211b067b",
+      "expense_id": "d2f32666-cb6d-4728-9c92-e295489ad373",
+      "product_id": null,
+      "description": "Mr. Mohamed Masum - Transfer Sponsorship",
+      "qty": 1,
+      "unit_price": 5218,
+      "tax_name": "VAT",
+      "tax_amount": 782.7,
+      "sort_order": 0,
+      "tax_rate": 15
+    },
+    {
+      "id": "bce7815b-0f61-4f3c-8f04-338e71bf074e",
+      "expense_id": "c348a237-bda3-4225-b91b-e98fcd17570e",
+      "product_id": null,
+      "description": "Exit Re-entry Mr. Shouman",
+      "qty": 1,
+      "unit_price": 174,
+      "tax_name": "VAT",
+      "tax_amount": 26.1,
+      "sort_order": 0,
+      "tax_rate": 15
+    },
+    {
+      "id": "1778e80a-036b-4131-8a5f-477361f2c980",
+      "expense_id": "cfa7a6cb-2650-48b7-8020-f733a7f7a4b0",
+      "product_id": null,
+      "description": "Exit Re-entry Mr. Masoum",
+      "qty": 1,
+      "unit_price": 174,
+      "tax_name": "VAT",
+      "tax_amount": 26.1,
+      "sort_order": 0,
+      "tax_rate": 15
+    },
+    {
+      "id": "82ee48a5-6e76-44f2-a76f-9680eb4478db",
+      "expense_id": "472964ae-047f-4adc-908b-d3faf5889dac",
+      "product_id": null,
+      "description": "GOSI Washika Tabassum",
+      "qty": 1,
+      "unit_price": 6669.6,
+      "tax_name": "VAT",
+      "tax_amount": 1000.44,
+      "sort_order": 0,
+      "tax_rate": 15
+    }
+  ]
+}
