@@ -423,6 +423,7 @@ export async function saveExpense(formData: FormData) {
   revalidatePath("/reports");
   const intent = str(formData, "intent");
   if (intent === "pay") redirect(`/expenses/${expenseId}?pay=1`);
+  if (intent === "view") redirect(`/expenses/${expenseId}`);
   if (intent === "new") redirect(`/expenses/new?type=${type}`);
   redirect("/expenses");
 }

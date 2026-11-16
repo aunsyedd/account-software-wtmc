@@ -69,6 +69,7 @@ export default async function ExpensesPage() {
                   <td className="num">{money(e.paid_amount, s)}</td>
                   <td className="actions">
                     <Link href={`/expenses/${e.id}`}>View</Link>
+                    <Link href={`/expenses/${e.id}/edit`}>Edit</Link>
                     <ConfirmDelete action={deleteExpense} id={e.id} what={`expense ${e.number}`} />
                   </td>
                 </tr>

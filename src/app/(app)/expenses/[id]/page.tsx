@@ -38,6 +38,9 @@ export default async function ExpenseViewPage({
         </div>
         <div className="head-actions no-print">
           <PrintButton filename={docTitle + (expense.vendor_name ? " - " + expense.vendor_name : "")} />
+          <Link className="btn btn-orange" href={`/expenses/${id}/edit`}>
+            Edit
+          </Link>
           <Link className="btn btn-gray" href="/expenses">
             ← All expenses
           </Link>
