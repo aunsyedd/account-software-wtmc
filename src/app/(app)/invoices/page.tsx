@@ -31,7 +31,7 @@ export default async function InvoicesPage() {
       </div>
       <NexoraSyncBar result={sync} back="/invoices" />
       <div className="table-wrap">
-      <table className="data">
+      <table className="data fit">
         <thead>
           <tr>
             <th>Invoice #</th>
@@ -66,12 +66,12 @@ export default async function InvoicesPage() {
                 source?: string;
               }) => (
                 <tr key={inv.id}>
-                  <td>
+                  <td className="client">
                     <Link href={`/invoices/${inv.id}`}>{inv.number}</Link>
                     {inv.source === "nexora" ? <span className="badge nexora">Nexora</span> : null}
                   </td>
                   <td className="date">{displayDate(inv.invoice_date)}</td>
-                  <td>{inv.client_name}</td>
+                  <td className="client">{inv.client_name}</td>
                   <td>
                     <span className={"badge " + (inv.title === "Proforma Invoice" ? "draft" : inv.status)}>
                       {inv.title === "Proforma Invoice" ? "quote" : inv.status}
