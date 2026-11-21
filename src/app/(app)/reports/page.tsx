@@ -580,10 +580,11 @@ export default async function ReportsPage({
                   </tr>
                 ) : (
                   payroll.map(({ emp, accrued, paid, st }) => (
-                    <tr key={emp.id}>
+                    <tr key={emp.id} className={emp.status === "terminated" ? "terminated" : undefined}>
                       <td>
                         <Link href={`/employees/${emp.id}`}>{emp.name}</Link>
                         {emp.status === "inactive" ? <span className="muted"> · inactive</span> : null}
+                        {emp.status === "terminated" ? <span className="badge terminated name-badge">Terminated</span> : null}
                       </td>
                       <td>{(emp as { job_title?: string }).job_title}</td>
                       <td className="num">{money(emp.gross_salary, s)}</td>
@@ -602,7 +603,7 @@ export default async function ReportsPage({
                     <td className="num">
                       {money(
                         sumMoney(
-                          payroll.filter((p) => p.emp.status !== "inactive"),
+                          payroll.filter((p) => p.emp.status !== "inactive" && p.emp.status !== "terminated"),
                           (p) => p.emp.gross_salary
                         ),
                         s

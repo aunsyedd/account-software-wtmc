@@ -1,21 +1,26 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { deleteSalaryPayment, saveSalaryPayment } from "@/app/actions";
+import { deleteSalaryPayment, reinstateEmployee, saveSalaryPayment } from "@/app/actions";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { EmployeeForm } from "@/components/EmployeeForm";
 import { PrintButton } from "@/components/PrintButton";
 import { PrintHeader } from "@/components/PrintHeader";
 import { SalarySetupNotice } from "@/components/SalarySetupNotice";
 import { SubmitButton } from "@/components/SubmitButton";
+import { TerminateEmployee } from "@/components/TerminateEmployee";
 import { displayDate, money, todayISO } from "@/lib/format";
 import { getCompany, getEmployee } from "@/lib/queries";
 import {
   addMonths,
   currentMonthKey,
   getSalaryPayments,
+  isTerminated,
+  monthKey,
+  monthLabel,
   monthOptions,
   reminderLines,
   salaryStatus,
+  terminationChoices,
   type SalaryEmployee,
 } from "@/lib/salary";
 
@@ -23,6 +28,9 @@ const ERRORS: Record<string, string> = {
   amount: "Payment amount must be more than zero.",
   month: "Choose which month the salary is for.",
   setup: "Salary payments can't be saved yet: run supabase/salary_payments.sql in Supabase first.",
+  termmonth: "Choose the month of the employee's last salary.",
+  termsetup:
+    "Employees can't be terminated yet: open Supabase → SQL Editor, paste supabase/employee_termination_wtmc.sql and press Run.",
 };
 
 export default async function EmployeePage({
@@ -30,10 +38,10 @@ export default async function EmployeePage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string; saved?: string }>;
+  searchParams: Promise<{ error?: string; saved?: string; terminated?: string }>;
 }) {
   const { id } = await params;
-  const { error, saved } = await searchParams;
+  const { error, saved, terminated: justTerminated } = await searchParams;
   const [employee, company, salary] = await Promise.all([getEmployee(id), getCompany(), getSalaryPayments()]);
   if (!employee) notFound();
   const s = company.currency_symbol;
@@ -47,13 +55,23 @@ export default async function EmployeePage({
   );
   const next = status.nextMonthToPay;
   const gross = Number(employee.gross_salary || 0);
+  const terminated = isTerminated(employee);
+  const lastMonth = monthKey(employee.last_salary_month);
+  const choices = terminated ? null : terminationChoices(status);
 
   return (
     <div className="report-sheet">
-      <PrintHeader company={company} title={`Salary statement — ${employee.name}`} subtitle={employee.job_title || undefined} />
+      <PrintHeader
+        company={company}
+        title={`Salary statement — ${employee.name}${terminated ? " (TERMINATED)" : ""}`}
+        subtitle={employee.job_title || undefined}
+      />
       <div className="page-head">
         <div>
-          <h1>{employee.name}</h1>
+          <h1>
+            {employee.name}
+            {terminated ? <span className="badge terminated name-badge">Terminated</span> : null}
+          </h1>
           <p className="hint">
             {[employee.job_title, employee.department].filter(Boolean).join(" · ") || "Employee"} · Monthly salary{" "}
             {money(gross, s)}
@@ -61,6 +79,18 @@ export default async function EmployeePage({
         </div>
         <div className="head-actions no-print">
           <PrintButton label="Print salary statement" filename={`Salary statement - ${employee.name}`} />
+          {choices ? (
+            <TerminateEmployee
+              id={employee.id}
+              name={employee.name}
+              months={choices.months}
+              defaultMonth={choices.defaultMonth}
+              balances={choices.balances}
+              today={todayISO()}
+              symbol={s}
+              className="btn btn-danger"
+            />
+          ) : null}
           <Link className="btn btn-gray" href="/employees">
             ← All employees
           </Link>
@@ -68,6 +98,33 @@ export default async function EmployeePage({
       </div>
 
       {!salary.ready ? <SalarySetupNotice /> : null}
+      {error === "termmonth" || error === "termsetup" ? <div className="alert no-print">{ERRORS[error]}</div> : null}
+
+      {terminated ? (
+        <div className="notice notice-terminated">
+          <div className="head-row">
+            <div>
+              <strong>TERMINATED</strong>
+              {lastMonth ? (
+                <>
+                  {" "}
+                  · Last salary for <strong>{monthLabel(lastMonth)}</strong>
+                  {employee.last_salary_date ? <> paid on {displayDate(employee.last_salary_date)}</> : null}
+                </>
+              ) : null}
+              . All of {employee.name}&apos;s salaries stay on record below; no salary is expected after{" "}
+              {lastMonth ? monthLabel(lastMonth) : "termination"}.
+              {justTerminated ? " Saved." : ""}
+            </div>
+            <form action={reinstateEmployee} className="no-print">
+              <input type="hidden" name="id" value={employee.id} />
+              <SubmitButton className="btn btn-gray" pendingLabel="Reinstating…">
+                Undo termination
+              </SubmitButton>
+            </form>
+          </div>
+        </div>
+      ) : null}
 
       <div className="stats" id="salary">
         <div className="stat">

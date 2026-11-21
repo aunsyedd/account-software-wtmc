@@ -30,7 +30,13 @@ export type SalaryEmployee = {
   hire_date?: string | null;
   created_at?: string | null;
   salary_start_month?: string | null;
+  last_salary_month?: string | null; // terminated: last month paid for
+  last_salary_date?: string | null; // terminated: date of the last salary
 };
+
+export function isTerminated(emp: { status?: string | null }) {
+  return emp.status === "terminated";
+}
 
 export type SalaryMonth = {
   key: string; // YYYY-MM
@@ -130,6 +136,7 @@ export function salaryStartMonth(emp: SalaryEmployee, payments: SalaryPayment[])
 /**
  * Salary expected for each month from the start month to `upTo` (inclusive).
  * Inactive employees are only expected to be paid up to the last month that has a payment.
+ * Terminated employees are expected to be paid up to their last salaried month, never after.
  */
 export function expectedMonths(emp: SalaryEmployee, payments: SalaryPayment[], upTo = currentMonthKey()) {
   const gross = round2(Number(emp.gross_salary || 0));
@@ -142,6 +149,9 @@ export function expectedMonths(emp: SalaryEmployee, payments: SalaryPayment[], u
       .sort()
       .pop();
     end = lastPaid && lastPaid < upTo ? lastPaid : lastPaid ? upTo : "";
+  } else if (isTerminated(emp)) {
+    const last = monthKey(emp.last_salary_month);
+    if (last && last < end) end = last;
   }
   const map = new Map<string, number>();
   for (const k of monthRange(start, end)) map.set(k, gross);
@@ -234,4 +244,19 @@ export async function getSalaryPayments(): Promise<{ ready: boolean; payments: S
     if (isMissingTable(error)) return { ready: false, payments: [] };
     throw error;
   }
+}
+
+/** Month choices, default month and unpaid balances for the TERMINATED dialog. */
+export function terminationChoices(status: SalaryStatus) {
+  const current = currentMonthKey();
+  const first = status.months[0]?.key ?? current;
+  const from = first < addMonths(current, -36) ? first : addMonths(current, -36);
+  const lastPaid = [...status.months].reverse().find((m) => m.paid > 0)?.key;
+  const balances: Record<string, number> = {};
+  for (const m of status.months) if (m.balance > 0) balances[m.key] = m.balance;
+  return {
+    months: monthOptions(from, addMonths(current, 1)),
+    defaultMonth: lastPaid ?? current,
+    balances,
+  };
 }

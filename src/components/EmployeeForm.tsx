@@ -64,10 +64,18 @@ export function EmployeeForm({ employee }: { employee?: Employee }) {
         </div>
         <div className="field">
           <label htmlFor="emp-status">Status</label>
-          <select id="emp-status" name="status" defaultValue={employee?.status || "active"}>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+          {employee?.status === "terminated" ? (
+            <>
+              <input type="hidden" name="status" value="terminated" />
+              <input id="emp-status" value="TERMINATED" disabled readOnly />
+              <div className="hint">Use &ldquo;Undo termination&rdquo; at the top of the page to make them active again.</div>
+            </>
+          ) : (
+            <select id="emp-status" name="status" defaultValue={employee?.status || "active"}>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          )}
         </div>
       </div>
 

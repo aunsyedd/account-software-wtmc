@@ -573,7 +573,7 @@ export async function saveEmployee(formData: FormData) {
     basic_salary: round2(Math.max(0, num(formData, "basic_salary"))),
     housing_allowance: round2(Math.max(0, num(formData, "housing_allowance"))),
     other_allowance: round2(Math.max(0, num(formData, "other_allowance"))),
-    status: str(formData, "status") === "inactive" ? "inactive" : "active",
+    status: ["inactive", "terminated"].includes(str(formData, "status")) ? str(formData, "status") : "active",
     notes: str(formData, "notes") || null,
     updated_at: new Date().toISOString(),
   };
@@ -619,6 +619,71 @@ export async function deleteEmployee(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/reports");
   redirect("/employees");
+}
+
+/** Termination needs supabase/employee_termination_wtmc.sql (new columns + 'terminated' status). */
+function isTerminationSetupMissing(error: { code?: string; message?: string } | null) {
+  if (!error) return false;
+  return isMissingSchema(error) || String(error.code) === "23514" || /last_salary_|status_check/i.test(String(error.message || ""));
+}
+
+function revalidateSalaryViews() {
+  revalidatePath("/employees");
+  revalidatePath("/dashboard");
+  revalidatePath("/reports");
+}
+
+/**
+ * Mark an employee TERMINATED. The employee and every salary payment stay on record;
+ * salary is no longer expected after `last_salary_month`. Optionally records the
+ * remaining balance of that last month as the final salary payment.
+ */
+export async function terminateEmployee(formData: FormData) {
+  const supabase = getSupabase();
+  const id = str(formData, "id");
+  if (!id) redirect("/employees");
+  const back = str(formData, "back") === "list" ? "/employees" : `/employees/${id}`;
+  const sep = back.includes("?") ? "&" : "?";
+  const last_salary_month = monthToDate(str(formData, "last_salary_month"));
+  const last_salary_date = str(formData, "last_salary_date") || todayISO();
+  if (!last_salary_month) redirect(`${back}${sep}error=termmonth`);
+
+  const { error } = await supabase
+    .from("employees")
+    .update({ status: "terminated", last_salary_month, last_salary_date, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (isTerminationSetupMissing(error)) redirect(`${back}${sep}error=termsetup`);
+  if (error) throw error;
+
+  const finalAmount = round2(num(formData, "final_amount"));
+  if (str(formData, "record_final") === "on" && finalAmount > 0) {
+    const { error: payError } = await supabase.from("salary_payments").insert({
+      employee_id: id,
+      salary_month: last_salary_month,
+      amount: finalAmount,
+      payment_date: last_salary_date,
+      payment_mode: str(formData, "final_mode") || "Cash",
+      notes: "Final salary (terminated)",
+    });
+    if (payError && !isMissingSchema(payError)) throw payError;
+  }
+  revalidateSalaryViews();
+  redirect(`/employees/${id}?terminated=1`);
+}
+
+/** Undo a termination: the employee becomes active again and salary tracking resumes. */
+export async function reinstateEmployee(formData: FormData) {
+  const supabase = getSupabase();
+  const id = str(formData, "id");
+  if (!id) redirect("/employees");
+  const { error } = await supabase
+    .from("employees")
+    .update({ status: "active", last_salary_month: null, last_salary_date: null, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (isTerminationSetupMissing(error)) redirect(`/employees/${id}?error=termsetup`);
+  if (error) throw error;
+  revalidateSalaryViews();
+  redirect(`/employees/${id}`);
 }
 
 export async function saveSalaryPayment(formData: FormData) {
