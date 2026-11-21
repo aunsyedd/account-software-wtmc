@@ -77,7 +77,10 @@ export default async function DashboardPage() {
         </div>
         <div className="stat">
           <div className="k">Net profit (excl. VAT)</div>
-          <div className={"v" + (pl.netProfit < 0 ? " text-danger" : "")}>{money(pl.netProfit, s)}</div>
+          {/* No minus sign: red = loss, green = profit. */}
+          <div className={"v" + (pl.netProfit < 0 ? " text-danger" : pl.netProfit > 0 ? " text-success" : "")}>
+            {money(Math.abs(pl.netProfit), s)}
+          </div>
         </div>
         <div className="stat">
           <div className="k">

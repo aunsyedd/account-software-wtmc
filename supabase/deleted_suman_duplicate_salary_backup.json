@@ -1,0 +1,126 @@
+{
+  "note": "Duplicate salary payments removed for Mohamed Suman Jamal uddin on 2026-11-21 (each month Jan-Nov 2026 was recorded twice). Table: salary_payments_wtmc.",
+  "rows": [
+    {
+      "id": "2fc8c485-472e-4d2f-963a-a4b31b4f02ba",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-01-01",
+      "amount": 20000,
+      "payment_date": "2026-11-21",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:13:30.309558+00:00"
+    },
+    {
+      "id": "c9de02f6-1cb9-4db5-a2be-0326503e3325",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-02-01",
+      "amount": 20000,
+      "payment_date": "2026-02-05",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:48:49.193461+00:00"
+    },
+    {
+      "id": "c1ba9bf9-1d3c-4bc2-b888-f96e7b618f14",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-03-01",
+      "amount": 20000,
+      "payment_date": "2026-03-08",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:14:42.432676+00:00"
+    },
+    {
+      "id": "9b76054b-f403-4457-ab08-380d0c2e6092",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-04-01",
+      "amount": 20000,
+      "payment_date": "2026-04-05",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:52:07.665197+00:00"
+    },
+    {
+      "id": "e71b36b9-4cc8-422d-97e0-414eb6c63712",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-05-01",
+      "amount": 20000,
+      "payment_date": "2026-05-05",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:52:29.811937+00:00"
+    },
+    {
+      "id": "855fa3ad-7c41-42a8-80ac-9dbebcc3dfd4",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-06-01",
+      "amount": 20000,
+      "payment_date": "2026-06-07",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:53:20.836958+00:00"
+    },
+    {
+      "id": "95249508-0b95-47cb-83ed-8a2eaeb23cce",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-07-01",
+      "amount": 20000,
+      "payment_date": "2026-07-06",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:53:45.183374+00:00"
+    },
+    {
+      "id": "9394c8f8-1724-43b7-a4bb-1ff66bdf310d",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-08-01",
+      "amount": 20000,
+      "payment_date": "2026-08-06",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:54:09.858232+00:00"
+    },
+    {
+      "id": "0bb3bb9c-aeec-477a-bea3-adbc0456602b",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-09-01",
+      "amount": 20000,
+      "payment_date": "2026-08-05",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:54:31.525046+00:00"
+    },
+    {
+      "id": "7c2efe3f-a96d-4df3-9a86-804da72551d9",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-10-01",
+      "amount": 20000,
+      "payment_date": "2026-10-04",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:33:13.454459+00:00"
+    },
+    {
+      "id": "0005d41a-ad58-4363-a412-819c35663fc0",
+      "employee_id": "2095a0e0-a936-4c95-865c-7abf442e9cde",
+      "salary_month": "2026-11-01",
+      "amount": 20000,
+      "payment_date": "2026-11-05",
+      "payment_mode": "Cash",
+      "reference": null,
+      "notes": null,
+      "created_at": "2026-11-21T11:55:09.633043+00:00"
+    }
+  ]
+}

@@ -304,8 +304,8 @@ export default async function ReportsPage({
               <tfoot>
                 <tr>
                   <td>Net {pl.netProfit < 0 ? "loss" : "profit"}</td>
-                  <td className="num">
-                    <Amount v={pl.netProfit} s={s} />
+                  <td className={"num" + (pl.netProfit < 0 ? " text-danger" : pl.netProfit > 0 ? " text-success" : "")}>
+                    {money(Math.abs(pl.netProfit), s)}
                   </td>
                 </tr>
               </tfoot>
