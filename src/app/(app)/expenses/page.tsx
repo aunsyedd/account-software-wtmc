@@ -4,26 +4,73 @@ import { PrintButton } from "@/components/PrintButton";
 import { PrintHeader } from "@/components/PrintHeader";
 import { sumMoney } from "@/lib/vat";
 import { displayDate, money, todayISO } from "@/lib/format";
-import { getCompany, getExpenses } from "@/lib/queries";
+import { getCategories, getCompany, getExpenses } from "@/lib/queries";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
 
-export default async function ExpensesPage() {
-  const [expenses, company] = await Promise.all([getExpenses(), getCompany()]);
+const UNCATEGORIZED = "__none__";
+
+export default async function ExpensesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}) {
+  const { category } = await searchParams;
+  const [allExpenses, company, categories] = await Promise.all([getExpenses(), getCompany(), getCategories()]);
   const s = company.currency_symbol;
+
+  // Category chips: every saved category, plus any name only found on old expenses.
+  const counts = new Map<string, number>();
+  let uncategorized = 0;
+  for (const e of allExpenses) {
+    if (e.category_name) counts.set(e.category_name, (counts.get(e.category_name) ?? 0) + 1);
+    else uncategorized++;
+  }
+  const names = new Set<string>(categories.map((c: { name: string }) => c.name));
+  for (const n of counts.keys()) names.add(n);
+  const categoryNames = [...names].sort((a, b) => a.localeCompare(b));
+
+  const active = category && (category === UNCATEGORIZED || names.has(category)) ? category : "";
+  const expenses = !active
+    ? allExpenses
+    : allExpenses.filter((e) => (active === UNCATEGORIZED ? !e.category_name : e.category_name === active));
+  const activeLabel = active === UNCATEGORIZED ? "Uncategorized" : active;
+
   const total = sumMoney(expenses, (e) => e.grand_total);
   const paid = sumMoney(expenses, (e) => e.paid_amount);
+  const href = (c: string) => (c ? `/expenses?category=${encodeURIComponent(c)}` : "/expenses");
   return (
     <>
-      <PrintHeader company={company} title="Expenses & purchase bills" subtitle={`${expenses.length} records · ${displayDate(todayISO())}`} />
+      <PrintHeader
+        company={company}
+        title={activeLabel ? `Expenses · ${activeLabel}` : "Expenses & purchase bills"}
+        subtitle={`${expenses.length} records · ${displayDate(todayISO())}`}
+      />
       <div className="page-head">
         <h1>Expenses</h1>
         <div className="no-print" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <PrintButton filename="Expenses" />
+          <PrintButton filename={activeLabel ? `Expenses - ${activeLabel}` : "Expenses"} />
           <Link className="btn btn-green" href="/expenses/choose">
             + Add expense
           </Link>
         </div>
       </div>
+      {categoryNames.length || uncategorized ? (
+        <div className="chip-row no-print" aria-label="Filter by category" style={{ marginBottom: 16 }}>
+          <Link href={href("")} className={"chip" + (!active ? " active" : "")}>
+            All ({allExpenses.length})
+          </Link>
+          {categoryNames.map((n) => (
+            <Link key={n} href={href(n)} className={"chip" + (active === n ? " active" : "")}>
+              {n} ({counts.get(n) ?? 0})
+            </Link>
+          ))}
+          {uncategorized ? (
+            <Link href={href(UNCATEGORIZED)} className={"chip" + (active === UNCATEGORIZED ? " active" : "")}>
+              Uncategorized ({uncategorized})
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
       <div className="table-wrap">
       <table className="data">
         <thead>
@@ -43,7 +90,7 @@ export default async function ExpensesPage() {
           {expenses.length === 0 ? (
             <tr>
               <td colSpan={9} className="muted">
-                No expenses yet.
+                {active ? `No ${activeLabel} expenses.` : "No expenses yet."}
               </td>
             </tr>
           ) : (
