@@ -1483,6 +1483,8 @@ table.data td.acct-type { color: var(--muted); }
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
+  font-family: inherit;
+  cursor: pointer;
 }
 .chip:hover { border-color: var(--brand-400); color: var(--brand); text-decoration: none; }
 .chip.active { background: var(--brand); border-color: var(--brand); color: #fff; }
